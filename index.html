@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Izračun kobasica</title>
+  <title>Izračun začina za meso</title>
   <style>
     :root {
       --bg: #f4f5f7;
@@ -228,10 +228,10 @@
 <div class="page no-print">
   <header>
     <div>
-      <h1>Izračun kobasica</h1>
+      <h1>Izračun začina za meso</h1>
       <p class="subtitle">Kobasica, kulen ili krvenica – izračun začina po tvojim postavkama.</p>
     </div>
-    <div class="badge">Recept iz Excela</div>
+    <div class="badge">Autor: Ante, ver: 1.0</div>
   </header>
 
   <div class="layout">
@@ -291,6 +291,18 @@
               <span id="sol">0</span><span class="unit">g</span>
             </div>
           </div>
+          <div class="result-pill">
+            <div class="result-label">Crijeva svinjska 32/34</div>
+            <div class="result-value">
+              <span id="cr_svinjska">0</span><span class="unit">m</span>
+            </div>
+          </div>
+          <div class="result-pill">
+            <div class="result-label">Crijeva goveđa 50/55</div>
+            <div class="result-value">
+              <span id="cr_goveda">0</span><span class="unit">m</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -346,6 +358,18 @@
         <input type="number" id="p_krv_sol" step="0.1">
       </div>
 
+      <h3 class="card-title" style="font-size: 14px; margin-top: 10px;">
+        <span class="dot" style="background:#16a085;"></span> Crijeva (m po kg)
+      </h3>
+      <div class="field-row">
+        <label>Svinjska 32/34 (m/kg)</label>
+        <input type="number" id="m_svinjska" step="0.01">
+      </div>
+      <div class="field-row">
+        <label>Goveđa 50/55 (m/kg)</label>
+        <input type="number" id="m_goveda" step="0.01">
+      </div>
+
       <div class="button-row" style="margin-top: 8px;">
         <button class="btn-secondary" onclick="spremiPostavke()">
           Primijeni promjene
@@ -357,6 +381,7 @@
 
       <p class="small-note">
         Osnovne vrijednosti (ljuta/slatka/biber/sol): kobasica 0.5/0.4/0.2/1.6, kulen 0.7/0.3/0/1.8, krvenica 0.3/0/0.5/1.9.
+        Crijeva: svinjska 1.7 m/kg, goveđa 0.35 m/kg.
       </p>
     </div>
   </div>
@@ -364,18 +389,26 @@
 
 <!-- Print verzija – samo sažetak -->
 <div id="print-area" style="display:none;">
-  <h2 id="print-title">Sažetak začina</h2>
+  <h2 id="print-title">Sažetak začina i crijeva</h2>
   <p id="print-text"></p>
 </div>
 
 <script>
+  // Postotci iz Excela [attached_file:file:1]
   const osnovniPostotci = {
     kobasica: { ljuta: 0.5, slatka: 0.4, biber: 0.2, sol: 1.6 },
     kulen:    { ljuta: 0.7, slatka: 0.3, biber: 0.0, sol: 1.8 },
     krvenica: { ljuta: 0.3, slatka: 0.0, biber: 0.5, sol: 1.9 }
   };
 
+  // Crijeva – početne vrijednosti približno kao u listu "potrebno" [attached_file:file:1]
+  const osnovniMPoKg = {
+    svinjska: 2.63,
+    goveda: 0.53
+  };
+
   let postotci = JSON.parse(JSON.stringify(osnovniPostotci));
+  let mPoKg = { ...osnovniMPoKg };
 
   function ucitajPostavkeUFormu() {
     document.getElementById('p_kob_ljuta').value   = postotci.kobasica.ljuta;
@@ -392,6 +425,9 @@
     document.getElementById('p_krv_slatka').value  = postotci.krvenica.slatka;
     document.getElementById('p_krv_biber').value   = postotci.krvenica.biber;
     document.getElementById('p_krv_sol').value     = postotci.krvenica.sol;
+
+    document.getElementById('m_svinjska').value    = mPoKg.svinjska;
+    document.getElementById('m_goveda').value      = mPoKg.goveda;
   }
 
   function spremiPostavke() {
@@ -415,32 +451,58 @@
         sol:     parseFloat(document.getElementById('p_krv_sol').value)     || 0
       }
     };
+
+    mPoKg = {
+      svinjska: parseFloat(document.getElementById('m_svinjska').value) || 0,
+      goveda:   parseFloat(document.getElementById('m_goveda').value)   || 0
+    };
+
     izracunaj();
   }
 
   function resetPostavke() {
     postotci = JSON.parse(JSON.stringify(osnovniPostotci));
+    mPoKg = { ...osnovniMPoKg };
     ucitajPostavkeUFormu();
     izracunaj();
   }
 
   function izracunaj() {
-    const vrsta = document.getElementById('vrsta').value;
-    const kg = parseFloat(document.getElementById('kolicina').value) || 0;
-    const p = postotci[vrsta];
+  const vrsta = document.getElementById('vrsta').value;
+  const kg = parseFloat(document.getElementById('kolicina').value) || 0;
+  const p = postotci[vrsta];
 
-    const ljuta  = kg * p.ljuta  * 10;
-    const slatka = kg * p.slatka * 10;
-    const biber  = kg * p.biber  * 10;
-    const sol    = kg * p.sol    * 10;
+  // začini
+  const ljuta  = kg * p.ljuta  * 10;
+  const slatka = kg * p.slatka * 10;
+  const biber  = kg * p.biber  * 10;
+  const sol    = kg * p.sol    * 10;
 
-    document.getElementById('ljuta').textContent   = ljuta.toFixed(1);
-    document.getElementById('slatka').textContent  = slatka.toFixed(1);
-    document.getElementById('biber').textContent   = biber.toFixed(1);
-    document.getElementById('sol').textContent     = sol.toFixed(1);
+  document.getElementById('ljuta').textContent   = ljuta.toFixed(1);
+  document.getElementById('slatka').textContent  = slatka.toFixed(1);
+  document.getElementById('biber').textContent   = biber.toFixed(1);
+  document.getElementById('sol').textContent     = sol.toFixed(1);
 
-    osvjeziSažetak();
+  // crijeva:
+  // - ako je kobasica: samo svinjska, goveđa = 0
+  // - ako je kulen ili krvenica: samo goveđa, svinjska = 0
+  let crSvinjska = 0;
+  let crGoveda = 0;
+
+  if (vrsta === 'kobasica') {
+    crSvinjska = kg * mPoKg.svinjska;
+    crGoveda = 0;
+  } else {
+    crSvinjska = 0;
+    crGoveda = kg * mPoKg.goveda;
   }
+
+  document.getElementById('cr_svinjska').textContent = crSvinjska.toFixed(2);
+  document.getElementById('cr_goveda').textContent   = crGoveda.toFixed(2);
+
+  osvjeziSažetak();
+}
+
 
   function osvjeziSažetak() {
     const vrsta = document.getElementById('vrsta').value;
@@ -450,6 +512,8 @@
     const slatka = document.getElementById('slatka').textContent;
     const biber  = document.getElementById('biber').textContent;
     const sol    = document.getElementById('sol').textContent;
+    const crSvinjska = document.getElementById('cr_svinjska').textContent;
+    const crGoveda   = document.getElementById('cr_goveda').textContent;
 
     const tekst =
       "Vrsta: " + vrsta + "\n" +
@@ -457,7 +521,9 @@
       "Ljuta paprika: " + ljuta + " g\n" +
       "Slatka paprika: " + slatka + " g\n" +
       "Biber: " + biber + " g\n" +
-      "Sol: " + sol + " g\n";
+      "Sol: " + sol + " g\n\n" +
+      "Crijeva svinjska 32/34: " + crSvinjska + " m\n" +
+      "Crijeva goveđa 50/55: " + crGoveda + " m\n";
 
     document.getElementById('summary').value = tekst;
     document.getElementById('print-text').textContent = tekst;
@@ -480,7 +546,6 @@
   }
 
   function printaj() {
-    // osiguraj da je sažetak aktualan
     osvjeziSažetak();
     window.print();
   }
