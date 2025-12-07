@@ -58,6 +58,22 @@
       color: var(--text-muted);
     }
 
+    h2 {
+      font-size: 16px;
+      margin: 0 0 6px;
+    }
+
+    ul {
+      margin: 4px 0 0 18px;
+      padding: 0;
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    li {
+      margin-bottom: 2px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -244,13 +260,44 @@
 <body>
 <div class="page">
 
+  <!-- UPUTE -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Upute za korištenje</h2>
+    </div>
+    <div style="font-size:13px; color:var(--text-main);">
+      <ol style="margin:0 0 6px 18px; padding:0;">
+        <li>
+          <strong>Unos početnih podataka</strong> – u stupcu „Dimova odrađeno“ upiši koliko puta je svaki proizvod bio na dimljenju; „Dimova potrebno“ je cilj iz plana, a postotak se računa automatski.
+        </li>
+        <li>
+          <strong>Status</strong> – u zadnjem stupcu biraj status:
+          „Dimljenje u tijeku“, „Još je u salamuri“, „Završeno dimljenje“, „Nismo pravili“; redovi su poredani tim redoslijedom.
+        </li>
+        <li>
+          <strong>Datumi dimljenja</strong> – za svaki proizvod izaberi datum (standardno je ponuđen današnji) i klikni „Dodaj datum“; ispod piše zadnji datum i ukupan broj dimljenja, a broj dimova se usklađuje s brojem datuma. [web:99][web:50]
+        </li>
+        <li>
+          <strong>Novi proizvod</strong> – u polje „Novi proizvod“ upiši naziv i „Dimova potrebno“, pa klikni „Dodaj proizvod“ da se pojavi novi red.
+        </li>
+        <li>
+          <strong>Spremi / resetiraj</strong> – „Spremi u preglednik“ sprema sve (uključujući nove proizvode) u localStorage; „Resetiraj sve na 0“ briše datume i vraća brojeve dimova na 0 i status „Dimljenje u tijeku“, ali ne briše dodane proizvode. [web:54]
+        </li>
+        <li>
+          <strong>Napomena</strong> – podaci se čuvaju samo u ovom pregledniku i na ovom uređaju; ako obrišeš podatke preglednika ili otvoriš stranicu na drugom uređaju, treba sve ponovno unijeti. [web:54]
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- GLAVNA APLIKACIJA -->
   <div class="card">
     <div class="card-header">
       <div>
         <h1>Pregled sušenja 2025</h1>
         <div class="subtitle">Praćenje broja dimova, datuma i proizvoda</div>
       </div>
-      <div class="badge">Autor: Ante · verzija 1.3</div>
+      <div class="badge">Autor: Ante · verzija 1.4</div>
     </div>
 
     <!-- LEGENDA GORE -->
@@ -297,7 +344,7 @@
 </div>
 
 <script>
-  const PODACI_KLJUC = 'pregled_susenja_2025_v3';
+  const PODACI_KLJUC = 'pregled_susenja_2025_v4';
 
   const proizvodiOsnovni = [
     { id: 'kobasice', naziv: 'kobasice', potrebno: 7 },
@@ -330,6 +377,13 @@
   };
 
   let proizvodiStanje = [];
+
+  function danasIso() {
+    const d = new Date();
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    return d.getFullYear() + '-' + month + '-' + day; // 2025-12-07 [web:109]
+  }
 
   function ucitajIzStorage() {
     try {
@@ -379,7 +433,7 @@
       localStorage.setItem(PODACI_KLJUC, JSON.stringify(zaSpremu));
       alert('Podaci su spremljeni.');
     } catch (e) {
-      alert('Ne mogu spremiti podatke (možda privatni način rada).');
+      alert('Ne mogu spremiti podate (možda privatni način rada).');
     }
   }
 
@@ -537,6 +591,7 @@
       const dateInput = document.createElement('input');
       dateInput.type = 'date';
       dateInput.id = 'date_' + p.id;
+      dateInput.value = danasIso(); // današnji datum [web:99][web:109]
 
       const dateBtn = document.createElement('button');
       dateBtn.className = 'btn btn-secondary';
