@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pregled sušenja 2025</title>
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --card-bg: #ffffff;
+      --accent: #2c3e50;
+      --accent-soft: #ecf0f1;
+      --border: #dcdfe3;
+      --text-main: #333333;
+      --text-muted: #777777;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 16px auto;
+      padding: 12px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead { background: var(--accent-soft); }
+
+    th, td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fafbfc;
+    }
+
+    input[type="number"] {
+      width: 70px;
+      padding: 3px 4px;
+      font-size: 13px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      text-align: right;
+    }
+
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(44,62,80,0.15);
+    }
+
+    input[type="date"],
+    input[type="text"] {
+      padding: 3px 4px;
+      font-size: 13px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .status-ongoing {
+      background: #fff7e6;
+      color: #b35a00;
+      border-color: #ffd591;
+    }
+
+    .status-done {
+      background: #f6ffed;
+      color: #237804;
+      border-color: #b7eb8f;
+    }
+
+    .status-salt {
+      background: #e6f7ff;
+      color: #0050b3;
+      border-color: #91d5ff;
+    }
+
+    .status-none {
+      background: #fff1f0;
+      color: #a8071a;
+      border-color: #ffa39e;
+    }
+
+    .status-manual {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .badge {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    select {
+      padding: 4px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .summary-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      font-size: 12px;
+    }
+
+    .date-block {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .date-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+      margin-top: 2px;
+    }
+
+    .add-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 18px; }
+      th:nth-child(3),
+      td:nth-child(3) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h1>Pregled sušenja 2025</h1>
+        <div class="subtitle">Praćenje broja dimova, datuma i proizvoda</div>
+      </div>
+      <div class="badge">Autor: Ante · verzija 1.3</div>
+    </div>
+
+    <!-- LEGENDA GORE -->
+    <div class="summary-row" style="margin-bottom: 4px;">
+      <span class="status-badge status-ongoing">Dimljenje u tijeku</span>
+      <span class="status-badge status-salt">Još je u salamuri</span>
+      <span class="status-badge status-done">Završeno dimljenje</span>
+      <span class="status-badge status-none">Nismo pravili</span>
+    </div>
+
+    <!-- NOVI PROIZVOD GORE -->
+    <div class="add-form">
+      <strong>Novi proizvod:</strong>
+      <input type="text" id="novo_ime" placeholder="Naziv proizvoda">
+      <input type="number" id="novo_potrebno" min="1" step="1" placeholder="Dimova potrebno">
+      <button class="btn btn-secondary" onclick="dodajNoviProizvod()">Dodaj proizvod</button>
+    </div>
+
+    <table style="margin-top: 10px;">
+      <thead>
+        <tr>
+          <th>Proizvod</th>
+          <th>Dimova potrebno</th>
+          <th>% odrađeno</th>
+          <th>Dimovi + datumi</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-proizvodi"></tbody>
+    </table>
+
+    <div class="summary-row" id="summary-row"></div>
+
+    <div class="controls-row">
+      <button class="btn btn-secondary" onclick="resetirajSve()">Resetiraj sve na 0</button>
+      <button class="btn btn-primary" onclick="spremiPodatke()">Spremi u preglednik</button>
+    </div>
+
+    <div class="status-manual">
+      Podaci (uključujući nove proizvode) spremaju se u localStorage ovog preglednika. [web:54]
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const PODACI_KLJUC = 'pregled_susenja_2025_v3';
+
+  const proizvodiOsnovni = [
+    { id: 'kobasice', naziv: 'kobasice', potrebno: 7 },
+    { id: 'kulinove_seke', naziv: 'kulinove seke', potrebno: 9 },
+    { id: 'kulin', naziv: 'kulin', potrebno: 10 },
+    { id: 'svarglovi', naziv: 'švarglovi', potrebno: 4 },
+    { id: 'krvenice', naziv: 'krvenice', potrebno: 4 },
+    { id: 'rebra', naziv: 'rebra', potrebno: 3 },
+    { id: 'kosti', naziv: 'kosti', potrebno: 3 },
+    { id: 'pecenica', naziv: 'pečenica', potrebno: 5 },
+    { id: 'but_ruza', naziv: 'but, ruža', potrebno: 8 },
+    { id: 'bunceki', naziv: 'bunceki', potrebno: 5 },
+    { id: 'pecenje_carsko', naziv: 'za pečenje, carsko', potrebno: 5 },
+    { id: 'slanina', naziv: 'slanina', potrebno: 8 },
+    { id: 'sunka', naziv: 'šunka', potrebno: 14 }
+  ];
+
+  const STATUSI = [
+    { value: 'u_tijeku', label: 'Dimljenje u tijeku', css: 'status-ongoing' },
+    { value: 'salamura', label: 'Još je u salamuri', css: 'status-salt' },
+    { value: 'zavrseno', label: 'Završeno dimljenje', css: 'status-done' },
+    { value: 'nismo', label: 'Nismo pravili', css: 'status-none' }
+  ];
+
+  const STATUS_RANK = {
+    'u_tijeku': 0,
+    'salamura': 1,
+    'zavrseno': 2,
+    'nismo': 3
+  };
+
+  let proizvodiStanje = [];
+
+  function ucitajIzStorage() {
+    try {
+      const raw = localStorage.getItem(PODACI_KLJUC);
+      if (!raw) {
+        proizvodiStanje = proizvodiOsnovni.map(p => ({
+          ...p,
+          odradjeno: 0,
+          status: 'u_tijeku',
+          datumi: [],
+          jeNovi: false
+        }));
+        return;
+      }
+      const parsed = JSON.parse(raw);
+      proizvodiStanje = parsed.map(p => ({
+        id: p.id,
+        naziv: p.naziv,
+        potrebno: Number(p.potrebno) || 0,
+        odradjeno: Number(p.odradjeno) || 0,
+        status: p.status || 'u_tijeku',
+        datumi: Array.isArray(p.datumi) ? p.datumi : [],
+        jeNovi: !!p.jeNovi
+      }));
+    } catch (e) {
+      proizvodiStanje = proizvodiOsnovni.map(p => ({
+        ...p,
+        odradjeno: 0,
+        status: 'u_tijeku',
+        datumi: [],
+        jeNovi: false
+      }));
+    }
+  }
+
+  function spremiPodatke() {
+    const zaSpremu = proizvodiStanje.map(p => ({
+      id: p.id,
+      naziv: p.naziv,
+      potrebno: p.potrebno,
+      odradjeno: p.odradjeno,
+      status: p.status,
+      datumi: p.datumi,
+      jeNovi: p.jeNovi
+    }));
+    try {
+      localStorage.setItem(PODACI_KLJUC, JSON.stringify(zaSpremu));
+      alert('Podaci su spremljeni.');
+    } catch (e) {
+      alert('Ne mogu spremiti podatke (možda privatni način rada).');
+    }
+  }
+
+  function promijeniOdradjeno(id, novaVrijednost) {
+    const p = proizvodiStanje.find(x => x.id === id);
+    if (!p) return;
+    const broj = Number(novaVrijednost);
+    if (isNaN(broj) || broj < 0) return;
+    p.odradjeno = broj;
+    osvjeziPrikaz();
+  }
+
+  function promijeniStatus(id, noviStatus) {
+    const p = proizvodiStanje.find(x => x.id === id);
+    if (!p) return;
+    p.status = noviStatus;
+    osvjeziPrikaz();
+  }
+
+  function dodajDatum(id) {
+    const input = document.getElementById('date_' + id);
+    if (!input) return;
+    const vrijednost = input.value;
+    if (!vrijednost) {
+      alert('Odaberi datum.');
+      return;
+    }
+    const p = proizvodiStanje.find(x => x.id === id);
+    if (!p) return;
+    if (!p.datumi.includes(vrijednost)) {
+      p.datumi.push(vrijednost);
+    }
+    p.odradjeno = p.datumi.length;
+    osvjeziPrikaz();
+  }
+
+  function resetirajSve() {
+    if (!confirm('Sigurno resetirati sve na 0, obrisati datume i vratiti status na "Dimljenje u tijeku"? (Novi proizvodi ostaju)')) return;
+    proizvodiStanje.forEach(p => {
+      p.odradjeno = 0;
+      p.status = 'u_tijeku';
+      p.datumi = [];
+    });
+    osvjeziPrikaz();
+  }
+
+  function izracunajPostotak(p) {
+    if (!p.potrebno || p.potrebno <= 0) return 0;
+    const v = Math.min(p.odradjeno, p.potrebno);
+    return (v / p.potrebno) * 100;
+  }
+
+  function formatirajDatumLokalno(iso) {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleDateString();
+    } catch {
+      return iso;
+    }
+  }
+
+  function generirajIdIzNaziva(naziv) {
+    return naziv.toLowerCase()
+      .trim()
+      .replace(/[\s,./]+/g, '_')
+      .replace(/[^a-z0-9_čćđšž]/g, '');
+  }
+
+  function dodajNoviProizvod() {
+    const imeInput = document.getElementById('novo_ime');
+    const potInput = document.getElementById('novo_potrebno');
+
+    const naziv = (imeInput.value || '').trim();
+    const potrebno = Number(potInput.value);
+
+    if (!naziv) {
+      alert('Upiši naziv proizvoda.');
+      return;
+    }
+    if (!potrebno || potrebno <= 0) {
+      alert('Upiši koliko dimova je potrebno (broj veći od 0).');
+      return;
+    }
+
+    let id = generirajIdIzNaziva(naziv);
+    if (!id) id = 'proizvod_' + Date.now();
+    if (proizvodiStanje.some(p => p.id === id)) {
+      id = id + '_' + Date.now();
+    }
+
+    const novi = {
+      id,
+      naziv,
+      potrebno,
+      odradjeno: 0,
+      status: 'u_tijeku',
+      datumi: [],
+      jeNovi: true
+    };
+
+    proizvodiStanje.push(novi);
+    imeInput.value = '';
+    potInput.value = '';
+    osvjeziPrikaz();
+  }
+
+  function osvjeziPrikaz() {
+    proizvodiStanje.sort((a, b) => {
+      const ra = STATUS_RANK[a.status] ?? 99;
+      const rb = STATUS_RANK[b.status] ?? 99;
+      if (ra !== rb) return ra - rb;
+      return a.naziv.localeCompare(b.naziv, 'hr');
+    });
+
+    const tbody = document.getElementById('tbody-proizvodi');
+    tbody.innerHTML = '';
+
+    let ukupnoPotrebno = 0;
+    let ukupnoOdradjeno = 0;
+
+    proizvodiStanje.forEach(p => {
+      ukupnoPotrebno += p.potrebno;
+      ukupnoOdradjeno += Math.min(p.odradjeno, p.potrebno);
+
+      const tr = document.createElement('tr');
+
+      const tdNaziv = document.createElement('td');
+      tdNaziv.textContent = p.naziv;
+      tr.appendChild(tdNaziv);
+
+      const tdPotrebno = document.createElement('td');
+      tdPotrebno.textContent = p.potrebno;
+      tr.appendChild(tdPotrebno);
+
+      const tdPostotak = document.createElement('td');
+      const postotak = izracunajPostotak(p);
+      tdPostotak.textContent = postotak.toFixed(0) + ' %';
+      tr.appendChild(tdPostotak);
+
+      const tdOdradjeno = document.createElement('td');
+      const brojInput = document.createElement('input');
+      brojInput.type = 'number';
+      brojInput.min = '0';
+      brojInput.step = '1';
+      brojInput.value = p.odradjeno;
+      brojInput.onchange = (e) => promijeniOdradjeno(p.id, e.target.value);
+      tdOdradjeno.appendChild(brojInput);
+
+      const blokDatuma = document.createElement('div');
+      blokDatuma.className = 'date-block';
+
+      const dateLine = document.createElement('div');
+      dateLine.className = 'date-inline';
+
+      const dateInput = document.createElement('input');
+      dateInput.type = 'date';
+      dateInput.id = 'date_' + p.id;
+
+      const dateBtn = document.createElement('button');
+      dateBtn.className = 'btn btn-secondary';
+      dateBtn.style.padding = '4px 8px';
+      dateBtn.textContent = 'Dodaj datum';
+      dateBtn.onclick = () => dodajDatum(p.id);
+
+      dateLine.appendChild(dateInput);
+      dateLine.appendChild(dateBtn);
+      blokDatuma.appendChild(dateLine);
+
+      if (p.datumi && p.datumi.length > 0) {
+        const zadnji = p.datumi[p.datumi.length - 1];
+        const info = document.createElement('div');
+        info.textContent =
+          'Zadnje dimljenje: ' + formatirajDatumLokalno(zadnji) +
+          ' (ukupno ' + p.datumi.length + ' puta)';
+        blokDatuma.appendChild(info);
+      } else {
+        const info = document.createElement('div');
+        info.textContent = 'Još nema unesenih datuma dimljenja.';
+        blokDatuma.appendChild(info);
+      }
+
+      tdOdradjeno.appendChild(blokDatuma);
+      tr.appendChild(tdOdradjeno);
+
+      const tdStatus = document.createElement('td');
+      const select = document.createElement('select');
+      STATUSI.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.value;
+        opt.textContent = s.label;
+        if (s.value === p.status) opt.selected = true;
+        select.appendChild(opt);
+      });
+      select.onchange = (e) => promijeniStatus(p.id, e.target.value);
+
+      const badge = document.createElement('span');
+      const statusMeta = STATUSI.find(s => s.value === p.status) || STATUSI[0];
+      badge.className = 'status-badge ' + statusMeta.css;
+      badge.textContent = statusMeta.label;
+
+      const wrap = document.createElement('div');
+      wrap.style.display = 'flex';
+      wrap.style.flexDirection = 'column';
+      wrap.style.gap = '4px';
+
+      wrap.appendChild(badge);
+      wrap.appendChild(select);
+
+      tdStatus.appendChild(wrap);
+      tr.appendChild(tdStatus);
+
+      tbody.appendChild(tr);
+    });
+
+    const summaryRow = document.getElementById('summary-row');
+    summaryRow.innerHTML = '';
+
+    const ukupnoPill = document.createElement('div');
+    ukupnoPill.className = 'pill';
+    ukupnoPill.textContent = 'Ukupno dimova potrebno: ' + ukupnoPotrebno;
+
+    const odradjenoPill = document.createElement('div');
+    odradjenoPill.className = 'pill';
+    odradjenoPill.textContent = 'Ukupno dimova odrađeno: ' + ukupnoOdradjeno;
+
+    const postotakUkupno = ukupnoPotrebno > 0 ? (ukupnoOdradjeno / ukupnoPotrebno) * 100 : 0;
+    const postotakPill = document.createElement('div');
+    postotakPill.className = 'pill';
+    postotakPill.textContent = 'Ukupno: ' + postotakUkupno.toFixed(0) + ' %';
+
+    summaryRow.appendChild(ukupnoPill);
+    summaryRow.appendChild(odradjenoPill);
+    summaryRow.appendChild(postotakPill);
+  }
+
+  ucitajIzStorage();
+  osvjeziPrikaz();
+</script>
+
+</body>
+</html>
